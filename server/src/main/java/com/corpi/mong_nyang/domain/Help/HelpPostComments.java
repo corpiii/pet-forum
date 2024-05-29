@@ -20,8 +20,8 @@ public class HelpPostComments {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
-    @JoinColumn(name = "post_id")
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id")
     private HelpPosts post;
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -26,6 +26,9 @@ public class HelpPosts {
     @JoinColumn(name = "user_id")
     private User userId;
 
-    @OneToMany(mappedBy = "post")
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<HelpPostComments> comments;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    private List<HelpPostImages> images;
 }
