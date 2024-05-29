@@ -1,10 +1,11 @@
-package com.corpi.mong_nyang.domain;
+package com.corpi.mong_nyang.domain.Help;
 
+import com.corpi.mong_nyang.domain.User;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NonNull;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -14,13 +15,17 @@ public class HelpPosts {
     @Column(name = "post_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User user_id;
-
     private String title;
 
     private String content;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User userId;
+
+    @OneToMany(mappedBy = "post")
+    private List<HelpPostComments> comments;
 }
