@@ -1,11 +1,10 @@
 package com.corpi.mong_nyang.domain;
 
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +13,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@RequiredArgsConstructor
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
     @Id
     @GeneratedValue
@@ -32,4 +31,13 @@ public class User {
 
     @NonNull
     private LocalDateTime created_at;
+
+    public static User of(String name, String email, String password) {
+        return new User(
+                name,
+                email,
+                password,
+                LocalDateTime.now()
+        );
+    }
 }
