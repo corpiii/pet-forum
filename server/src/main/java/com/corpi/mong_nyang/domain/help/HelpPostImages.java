@@ -1,4 +1,4 @@
-package com.corpi.mong_nyang.domain.Help;
+package com.corpi.mong_nyang.domain.help;
 
 import jakarta.persistence.*;
 import lombok.Getter;
