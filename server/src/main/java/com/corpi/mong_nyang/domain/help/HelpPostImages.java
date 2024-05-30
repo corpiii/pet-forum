@@ -2,6 +2,7 @@ package com.corpi.mong_nyang.domain.help;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Entity
 @Getter
