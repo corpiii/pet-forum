@@ -12,10 +12,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
     private final UserRepository userRepository;
 
-    public Long join(String name, String email, String password) {
+    public Long join(String name, String email, String password) throws IllegalArgumentException {
         User user = User.of(name, email, password);
 
-        // validation
+        if (findOne(email) != null) {
+            throw new IllegalArgumentException("이미 가입된 이메일 입니다. 다른 이메일을 사용해주세요.");
+        }
 
         userRepository.save(user);
 
