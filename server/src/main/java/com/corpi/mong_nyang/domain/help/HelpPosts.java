@@ -44,4 +44,9 @@ public class HelpPosts {
         LocalDateTime current = LocalDateTime.now();
         return new HelpPosts(title, content, current, user);
     }
+
+    public void update(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }
