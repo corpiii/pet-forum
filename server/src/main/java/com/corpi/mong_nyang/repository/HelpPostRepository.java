@@ -8,9 +8,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface HelpPostRepository extends JpaRepository<HelpPosts, Long> {
 
-    @Query("select h from HelpPosts h " +
-            "join fetch h.images i " +
-            "join fetch h.comments c " +
-            "join fetch c.children ch")
+    @Query("select h from HelpPosts h")
     Page<HelpPosts> findHelpPosts(Pageable pageable);
 }
