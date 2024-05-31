@@ -44,6 +44,11 @@ public class HelpPostService {
     }
 
     @Transactional(readOnly = true)
+    public Optional<HelpPosts> findById(Long id) {
+        return helpPostRepository.findById(id);
+    }
+
+    @Transactional(readOnly = true)
     public List<HelpPosts> fetchPostList(int page) {
         Pageable pageable = PageRequest.of(page, pageLimit);
         List<HelpPosts> findedList = helpPostRepository.findHelpPosts(pageable).getContent();
