@@ -49,4 +49,9 @@ public class HelpPosts {
         this.title = title;
         this.content = content;
     }
+
+    public void replyComment(HelpPostComments comments) {
+        this.comments.add(comments);
+        comments.setPost(this);
+    }
 }
