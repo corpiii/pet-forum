@@ -18,7 +18,9 @@ public class HelpPostCommentService {
     private final HelpPostCommentRepository helpPostCommentRepository;
     private final UserRepository userRepository;
 
-    public Long commentByUser(Long postId, Long userId, String content) {
+
+    public Long createCommentByUserInPost(Long postId, Long userId, String content) {
+
         HelpPosts foundedPost = helpPostRepository.findById(postId).get();
         User foundedUser = userRepository.findById(userId).get();
         HelpPostComments comment = HelpPostComments.of(content, foundedUser);
@@ -27,5 +29,17 @@ public class HelpPostCommentService {
         helpPostCommentRepository.save(comment);
 
         return comment.getId();
+    }
+
+    public void updateComment(Long commentId, String content) {
+        HelpPostComments foundedComment = helpPostCommentRepository.findById(commentId).get();
+
+        foundedComment.changeContent(content);
+    }
+
+    public void deleteComment(Long commentId) {
+        HelpPostComments foundedComment = helpPostCommentRepository.findById(commentId).get();
+
+        foundedComment.clearComment();
     }
 }

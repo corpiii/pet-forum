@@ -59,7 +59,7 @@ class HelpPostCommentServiceTest {
         HelpPosts createdPost = helpPosts.get(0);
 
         // when
-        helpPostCommentService.commentByUser(createdPost.getId(), commentWriter.getId(), commentContent);
+        helpPostCommentService.createCommentByUserInPost(createdPost.getId(), commentWriter.getId(), commentContent);
 
         // then
         HelpPosts commentedPost = helpPostService.findById(helpPosts.get(0).getId()).get();

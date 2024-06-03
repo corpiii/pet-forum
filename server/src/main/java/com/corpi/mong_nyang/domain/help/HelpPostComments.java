@@ -49,4 +49,13 @@ public class HelpPostComments {
         this.children.add(comment);
         comment.parent = this;
     }
+
+    public void changeContent(String content) {
+        this.content = content;
+    }
+
+    public void clearComment() {
+        this.content = null;
+        this.author = null;
+    }
 }
