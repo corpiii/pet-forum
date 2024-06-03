@@ -154,4 +154,34 @@ class HelpPostCommentServiceTest {
         assertEquals(helpPosts.getComments().get(0).getContent(), commentContent);
         assertEquals(helpPosts.getComments().get(0).getChildren().get(0).getContent(), replyCommentContent);
     }
+
+    @Test
+    @DisplayName("게시글을 삭제했을 때 댓글과 대댓글 모두 같이 삭제")
+    public void deletePostThenCommentRemoveTest() {
+        // given
+        String postTitle = "Post Title";
+        String postContent = "Post content";
+        String commentContent = "Test Comment";
+        String replyCommentContent = "Test Reply Comment";
+
+        Long postId = helpPostService.createPost(postTitle, postContent, postWriter);
+        HelpPosts createdPost = helpPostService.findById(postId).get();
+
+        assertEquals(createdPost.getTitle(), postTitle);
+        assertEquals(createdPost.getContent(), postContent);
+
+        Long createdCommentId = helpPostCommentService.createCommentByUserInPost(createdPost.getId(), commentWriter.getId(), commentContent);
+
+        assertEquals(createdPost.getComments().get(0).getContent(), commentContent);
+
+        HelpPostComments willRepliedComment = helpPostCommentService.findById(createdCommentId);
+
+        willRepliedComment.replyComment(replyCommentContent, postWriter);
+
+        // when
+        helpPostService.deletePost(postId);
+
+        // then
+        assertNull(helpPostCommentService.findById(willRepliedComment.getId()));
+    }
 }
