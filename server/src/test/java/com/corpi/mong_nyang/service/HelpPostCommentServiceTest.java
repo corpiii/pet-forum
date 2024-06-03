@@ -68,4 +68,30 @@ class HelpPostCommentServiceTest {
         assertEquals(commentedPost.getComments().get(0).getAuthor(), commentWriter);
         assertEquals(commentedPost.getComments().get(0).getContent(), commentContent);
     }
+    
+    @Test
+    @DisplayName(value = "댓글을 수정 했을 때 게시글에서 잘 반영되는지 확인")
+    public void updateCommentTest() {
+        // given
+        String postTitle = "Post Title";
+        String postContent = "Post content";
+        String commentContent = "Test Comment";
+        String updatedCommentContent = "Updated Post Content";
+
+        Long postId = helpPostService.createPost(postTitle, postContent, postWriter);
+        HelpPosts createdPost = helpPostService.findById(postId).get();
+        
+        assertEquals(createdPost.getTitle(), postTitle);
+        assertEquals(createdPost.getContent(), postContent);
+
+        Long createdCommentId = helpPostCommentService.createCommentByUserInPost(createdPost.getId(), commentWriter.getId(), commentContent);
+
+        assertEquals(createdPost.getComments().get(0).getContent(), commentContent);
+
+        // when
+        helpPostCommentService.updateComment(createdCommentId, updatedCommentContent);
+
+        // then
+        assertEquals(createdPost.getComments().get(0).getContent(), updatedCommentContent);
+    }
 }

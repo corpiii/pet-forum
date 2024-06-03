@@ -18,9 +18,7 @@ public class HelpPostCommentService {
     private final HelpPostCommentRepository helpPostCommentRepository;
     private final UserRepository userRepository;
 
-
     public Long createCommentByUserInPost(Long postId, Long userId, String content) {
-
         HelpPosts foundedPost = helpPostRepository.findById(postId).get();
         User foundedUser = userRepository.findById(userId).get();
         HelpPostComments comment = HelpPostComments.of(content, foundedUser);
