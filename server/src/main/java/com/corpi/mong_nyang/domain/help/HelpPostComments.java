@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -38,9 +39,9 @@ public class HelpPostComments {
     private HelpPostComments parent;
 
     @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-    private List<HelpPostComments> children;
+    private List<HelpPostComments> children = new ArrayList<>();
 
-    static HelpPostComments of(String content, User author) {
+    public static HelpPostComments of(String content, User author) {
         return new HelpPostComments(content, LocalDateTime.now(), author);
     }
 

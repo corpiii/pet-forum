@@ -8,6 +8,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -35,10 +36,10 @@ public class HelpPosts {
     private User userId;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<HelpPostComments> comments;
+    private List<HelpPostComments> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
-    private List<HelpPostImages> images;
+    private List<HelpPostImages> images = new ArrayList<>();
 
     public static HelpPosts of(String title, String content, User user) {
         LocalDateTime current = LocalDateTime.now();
