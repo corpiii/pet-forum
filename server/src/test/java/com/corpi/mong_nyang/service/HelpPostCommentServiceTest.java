@@ -1,6 +1,7 @@
 package com.corpi.mong_nyang.service;
 
 import com.corpi.mong_nyang.domain.User;
+import com.corpi.mong_nyang.domain.help.HelpPostComments;
 import com.corpi.mong_nyang.domain.help.HelpPosts;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
@@ -93,5 +94,33 @@ class HelpPostCommentServiceTest {
 
         // then
         assertEquals(createdPost.getComments().get(0).getContent(), updatedCommentContent);
+    }
+
+    @Test
+    @DisplayName("댓글을 삭제 했을 때 정상적으로 삭제되는지 확인")
+    public void deleteCommentTest() {
+        // given
+        String postTitle = "Post Title";
+        String postContent = "Post content";
+        String commentContent = "Test Comment";
+
+        Long postId = helpPostService.createPost(postTitle, postContent, postWriter);
+        HelpPosts createdPost = helpPostService.findById(postId).get();
+
+        assertEquals(createdPost.getTitle(), postTitle);
+        assertEquals(createdPost.getContent(), postContent);
+
+        Long createdCommentId = helpPostCommentService.createCommentByUserInPost(createdPost.getId(), commentWriter.getId(), commentContent);
+
+        assertEquals(createdPost.getComments().get(0).getContent(), commentContent);
+
+        // when
+        helpPostCommentService.deleteComment(createdCommentId);
+
+        // then
+        HelpPostComments createdComment = createdPost.getComments().get(0);
+
+        assertEquals(createdComment.getContent(), null);
+        assertEquals(createdComment.getAuthor(), null);
     }
 }
