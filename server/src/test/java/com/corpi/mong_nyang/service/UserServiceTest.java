@@ -46,7 +46,7 @@ public class UserServiceTest {
 
         // when, then
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
-            userService.join(name, email, password);
+            userService.join(name1, email1, password1);
         });
     }
 }

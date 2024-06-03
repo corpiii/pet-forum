@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
 public class User {
+    public User() {}
+
     @Id
     @GeneratedValue
     @Column(name = "user_id")
