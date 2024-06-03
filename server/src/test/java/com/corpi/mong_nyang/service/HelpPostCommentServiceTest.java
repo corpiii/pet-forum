@@ -123,4 +123,35 @@ class HelpPostCommentServiceTest {
         assertEquals(createdComment.getContent(), null);
         assertEquals(createdComment.getAuthor(), null);
     }
+
+    @Test
+    @DisplayName("대댓글을 달고 난 후 정상적으로 동작하는지 확인")
+    public void replyCommentTest() {
+        // given
+        String postTitle = "Post Title";
+        String postContent = "Post content";
+        String commentContent = "Test Comment";
+        String replyCommentContent = "Test Reply Comment";
+
+        Long postId = helpPostService.createPost(postTitle, postContent, postWriter);
+        HelpPosts createdPost = helpPostService.findById(postId).get();
+
+        assertEquals(createdPost.getTitle(), postTitle);
+        assertEquals(createdPost.getContent(), postContent);
+
+        Long createdCommentId = helpPostCommentService.createCommentByUserInPost(createdPost.getId(), commentWriter.getId(), commentContent);
+
+        assertEquals(createdPost.getComments().get(0).getContent(), commentContent);
+
+        // when
+        HelpPostComments willRepliedComment = helpPostCommentService.findById(createdCommentId);
+
+        willRepliedComment.replyComment(replyCommentContent, postWriter);
+
+        // then
+        HelpPosts helpPosts = helpPostService.fetchPostList(0).get(0);
+
+        assertEquals(helpPosts.getComments().get(0).getContent(), commentContent);
+        assertEquals(helpPosts.getComments().get(0).getChildren().get(0).getContent(), replyCommentContent);
+    }
 }

@@ -29,6 +29,10 @@ public class HelpPostCommentService {
         return comment.getId();
     }
 
+    public HelpPostComments findById(Long id) {
+        return helpPostCommentRepository.findById(id).orElse(null);
+    }
+
     public void updateComment(Long commentId, String content) {
         HelpPostComments foundedComment = helpPostCommentRepository.findById(commentId).get();
 
