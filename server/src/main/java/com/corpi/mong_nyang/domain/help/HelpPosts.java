@@ -33,7 +33,7 @@ public class HelpPosts {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     @NonNull
-    private User userId;
+    private User author;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<HelpPostComments> comments = new ArrayList<>();
@@ -63,6 +63,7 @@ public class HelpPosts {
     }
 
     public void addImage(HelpPostImages image) {
+        image.setPost(this);
         this.images.add(image);
     }
 

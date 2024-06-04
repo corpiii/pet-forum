@@ -56,4 +56,18 @@ public class HelpPostService {
 
         return findedList;
     }
+
+    public void addImage(Long postId, List<HelpPostImages> images) {
+        HelpPosts posts = helpPostRepository.findById(postId).get();
+
+        for (HelpPostImages image : images) {
+            posts.addImage(image);
+        }
+    }
+
+    public void removeImage(Long postId, int index) {
+        HelpPosts posts = helpPostRepository.findById(postId).get();
+
+        posts.removeImageAt(index);
+    }
 }
