@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -162,5 +161,29 @@ class HelpPostServiceTest {
 
         // then
         assertTrue(helpPostImageRepository.findAll().isEmpty());
+    }
+
+    @Test
+    @DisplayName("post 삭제 시 이미지 연관 삭제 테스트")
+    public void deletePostThenImageDeleteInDB() {
+        // given
+        String testTitle = "testTitle";
+        String testContent = "testContent";
+
+        Long postId = helpPostService.createPost(testTitle, testContent, testUser, List.of());
+        HelpPosts createdPost = helpPostService.findById(postId).get();
+
+        assertEquals(createdPost.getTitle(), testTitle);
+        assertEquals(createdPost.getContent(), testContent);
+
+        HelpPostImages helpPostImage = HelpPostImages.of("testUrl");
+
+        helpPostService.addImage(postId, List.of(helpPostImage));
+
+        // when
+        helpPostService.deletePost(postId);
+
+        // then
+        assertEquals(helpPostImageRepository.findAll().size(), 0);
     }
 }
