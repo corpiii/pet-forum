@@ -1,16 +1,24 @@
 package com.corpi.mong_nyang.service;
 
 import com.corpi.mong_nyang.domain.User;
+import com.corpi.mong_nyang.domain.help.HelpPostComments;
+import com.corpi.mong_nyang.domain.help.HelpPosts;
+import com.corpi.mong_nyang.repository.HelpPostCommentRepository;
+import com.corpi.mong_nyang.repository.HelpPostRepository;
 import com.corpi.mong_nyang.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final HelpPostRepository helpPostRepository;
+    private final HelpPostCommentRepository helpPostCommentRepository;
 
     public Long join(String name, String email, String password) throws IllegalArgumentException {
         User user = User.of(name, email, password);
@@ -26,5 +34,20 @@ public class UserService {
 
     public User findOne(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    public void delete(Long id) {
+        List<HelpPostComments> allCommentByUser = helpPostCommentRepository.findAllByUser(id);
+        List<HelpPosts> allByUser = helpPostRepository.findAllByUser(id);
+
+        for (HelpPostComments helpPostComments : allCommentByUser) {
+            helpPostCommentRepository.deleteById(helpPostComments.getId());
+        }
+
+        for (HelpPosts posts : allByUser) {
+            helpPostRepository.deleteById(posts.getId());
+        }
+
+        userRepository.deleteById(id);
     }
 }
