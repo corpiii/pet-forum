@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -49,7 +50,7 @@ class HelpPostCommentServiceTest {
         String postContent = "Post content";
         String commentContent = "Test Comment";
 
-        helpPostService.createPost(postTitle, postContent, postWriter);
+        helpPostService.createPost(postTitle, postContent, postWriter, new ArrayList<>());
 
         List<HelpPosts> helpPosts = helpPostService.fetchPostList(0);
 
@@ -79,7 +80,7 @@ class HelpPostCommentServiceTest {
         String commentContent = "Test Comment";
         String updatedCommentContent = "Updated Post Content";
 
-        Long postId = helpPostService.createPost(postTitle, postContent, postWriter);
+        Long postId = helpPostService.createPost(postTitle, postContent, postWriter, new ArrayList<>());
         HelpPosts createdPost = helpPostService.findById(postId).get();
         
         assertEquals(createdPost.getTitle(), postTitle);
@@ -104,7 +105,7 @@ class HelpPostCommentServiceTest {
         String postContent = "Post content";
         String commentContent = "Test Comment";
 
-        Long postId = helpPostService.createPost(postTitle, postContent, postWriter);
+        Long postId = helpPostService.createPost(postTitle, postContent, postWriter, new ArrayList<>());
         HelpPosts createdPost = helpPostService.findById(postId).get();
 
         assertEquals(createdPost.getTitle(), postTitle);
@@ -133,7 +134,7 @@ class HelpPostCommentServiceTest {
         String commentContent = "Test Comment";
         String replyCommentContent = "Test Reply Comment";
 
-        Long postId = helpPostService.createPost(postTitle, postContent, postWriter);
+        Long postId = helpPostService.createPost(postTitle, postContent, postWriter, new ArrayList<>());
         HelpPosts createdPost = helpPostService.findById(postId).get();
 
         assertEquals(createdPost.getTitle(), postTitle);
@@ -164,7 +165,7 @@ class HelpPostCommentServiceTest {
         String commentContent = "Test Comment";
         String replyCommentContent = "Test Reply Comment";
 
-        Long postId = helpPostService.createPost(postTitle, postContent, postWriter);
+        Long postId = helpPostService.createPost(postTitle, postContent, postWriter, new ArrayList<>());
         HelpPosts createdPost = helpPostService.findById(postId).get();
 
         assertEquals(createdPost.getTitle(), postTitle);

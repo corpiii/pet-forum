@@ -1,6 +1,7 @@
 package com.corpi.mong_nyang.service;
 
 import com.corpi.mong_nyang.domain.User;
+import com.corpi.mong_nyang.domain.help.HelpPostImages;
 import com.corpi.mong_nyang.domain.help.HelpPosts;
 import com.corpi.mong_nyang.repository.HelpPostRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,8 +20,8 @@ public class HelpPostService {
     private final int pageLimit = 50;
     private final HelpPostRepository helpPostRepository;
 
-    public Long createPost(String title, String content, User user) {
-        HelpPosts post = HelpPosts.of(title, content, user);
+    public Long createPost(String title, String content, User user, List<HelpPostImages> images) {
+        HelpPosts post = HelpPosts.of(title, content, user, images);
 
         helpPostRepository.save(post);
 

@@ -41,9 +41,15 @@ public class HelpPosts {
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     private List<HelpPostImages> images = new ArrayList<>();
 
-    public static HelpPosts of(String title, String content, User user) {
+    public static HelpPosts of(String title, String content, User user, List<HelpPostImages> images) {
         LocalDateTime current = LocalDateTime.now();
-        return new HelpPosts(title, content, current, user);
+        HelpPosts posts = new HelpPosts(title, content, current, user);
+
+        for (HelpPostImages image : images) {
+            posts.addImage(image);
+        }
+
+        return posts;
     }
 
     public void update(String title, String content) {
@@ -54,5 +60,13 @@ public class HelpPosts {
     public void replyComment(HelpPostComments comments) {
         this.comments.add(comments);
         comments.setPost(this);
+    }
+
+    public void addImage(HelpPostImages image) {
+        this.images.add(image);
+    }
+
+    public void removeImageAt(int index) {
+        this.images.remove(index);
     }
 }

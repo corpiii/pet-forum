@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,7 +41,7 @@ class HelpPostServiceTest {
 
         // when, then
         assertDoesNotThrow(() -> {
-            helpPostService.createPost(testTitle, testContent, foundedUser);
+            helpPostService.createPost(testTitle, testContent, foundedUser, new ArrayList<>());
         });
     }
 
@@ -60,7 +61,7 @@ class HelpPostServiceTest {
         String testContent = "testContent";
 
         assertDoesNotThrow(() -> {
-            helpPostService.createPost(testTitle, testContent, foundedUser);
+            helpPostService.createPost(testTitle, testContent, foundedUser, new ArrayList<>());
         });
 
         // when
@@ -86,7 +87,7 @@ class HelpPostServiceTest {
         String newTitle = "updatedTitle";
         String newContent = "updatedContent";
 
-        Long postId = helpPostService.createPost(testTitle, testContent, foundedUser);
+        Long postId = helpPostService.createPost(testTitle, testContent, foundedUser, new ArrayList<>());
 
         // when
         helpPostService.updatePost(postId, newTitle, newContent);
@@ -115,7 +116,7 @@ class HelpPostServiceTest {
         String testTitle = "testTitle";
         String testContent = "testContent";
 
-        Long postId = helpPostService.createPost(testTitle, testContent, foundedUser);
+        Long postId = helpPostService.createPost(testTitle, testContent, foundedUser, new ArrayList<>());
 
         // when
         helpPostService.deletePost(postId);
