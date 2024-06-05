@@ -52,7 +52,8 @@ public class HelpPostService {
     @Transactional(readOnly = true)
     public List<HelpPosts> fetchPostList(int page) {
         Pageable pageable = PageRequest.of(page, pageLimit);
-        List<HelpPosts> findedList = helpPostRepository.findHelpPosts(pageable).getContent();
+
+        List<HelpPosts> findedList = helpPostRepository.findAll(pageable).getContent();
 
         return findedList;
     }

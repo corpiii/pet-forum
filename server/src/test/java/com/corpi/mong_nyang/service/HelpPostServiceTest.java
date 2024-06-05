@@ -137,6 +137,7 @@ class HelpPostServiceTest {
 
         // then
         assertEquals(createdPost.getImages().get(0), helpPostImage);
+        assertEquals(helpPostImageRepository.findAll().get(0).getUrl(), helpPostImage.getUrl());
     }
 
     @Test
