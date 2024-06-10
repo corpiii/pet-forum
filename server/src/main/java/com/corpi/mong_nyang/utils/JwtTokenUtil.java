@@ -1,21 +1,38 @@
 package com.corpi.mong_nyang.utils;
 
 import com.corpi.mong_nyang.domain.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwt;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
+import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+@Component
+@Slf4j
+@PropertySource("classpath:jwtkey.properties")
 public class JwtTokenUtil {
-    private static final SecretKey key = Jwts.SIG.HS256.key().build();
+    private static final long ACCESS_EXPIRATION_TIME = Duration.ofMinutes(30).toMillis();
+    private static final long REFRESH_EXPIRATION_TIME = Duration.ofDays(7).toMillis();
 
-    public static String generateToken(User user, long expireTime) {
+    @Value("${jwtkey}")
+    private String key;
+
+    public String generateToken(User user) {
         long current = System.currentTimeMillis();
+        SecretKey secretKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
 
         return Jwts.builder()
                 .header()
@@ -24,15 +41,17 @@ public class JwtTokenUtil {
                 .claims()
                     .add("email", user.getEmail())
                     .issuedAt(new Date(current))
-                    .expiration(new Date(current + expireTime))
+                    .expiration(new Date(current + ACCESS_EXPIRATION_TIME))
                     .and()
-                .signWith(key)
+                .signWith(secretKey)
                 .compact();
     }
 
-    public static Map<String, String> decodeToken(String token) {
+    public Map<String, String> decodeToken(String token) {
+        SecretKey secretKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
+
         Jws<Claims> claimsJws = Jwts.parser()
-                .verifyWith(key)
+                .verifyWith(secretKey)
                 .build()
                 .parseSignedClaims(token);
 
