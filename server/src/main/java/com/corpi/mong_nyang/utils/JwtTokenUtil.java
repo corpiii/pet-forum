@@ -37,7 +37,7 @@ public class JwtTokenUtil {
     public String generateAccessToken(User user) throws JsonProcessingException {
         long current = System.currentTimeMillis();
         SecretKey secretKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
-        UserTokenDTO userTokenDTO = UserTokenDTO.from(user);
+        UserTokenDTO userTokenDTO = UserTokenDTO.from(user, false);
         String json = objectMapper.writeValueAsString(userTokenDTO);
 
         return Jwts.builder()
@@ -56,7 +56,7 @@ public class JwtTokenUtil {
     public String generateRefreshToken(User user) throws JsonProcessingException {
         long current = System.currentTimeMillis();
         SecretKey secretKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
-        UserTokenDTO userTokenDTO = UserTokenDTO.from(user);
+        UserTokenDTO userTokenDTO = UserTokenDTO.from(user, true);
         String json = objectMapper.writeValueAsString(userTokenDTO);
 
         return Jwts.builder()
@@ -86,8 +86,13 @@ public class JwtTokenUtil {
         return objectMapper.readValue(json, UserTokenDTO.class);
     }
 
-    public boolean isValidToken(String token) throws JsonProcessingException {
+    public boolean isValidToken(String token, boolean isRefresh) throws JsonProcessingException {
         UserTokenDTO userTokenDTO = decodeToken(token);
+
+        if (!userTokenDTO.isRefresh()) {
+            return false;
+        }
+
         Date expiredAt = userTokenDTO.getExpiredAt();
 
         if (expiredAt.before(new Date(System.currentTimeMillis()))) {

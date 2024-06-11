@@ -19,9 +19,12 @@ public class UserTokenDTO {
     @NonNull
     private String name;
 
+    @NonNull
+    private boolean isRefresh;
+
     Date expiredAt;
 
-    public static UserTokenDTO from(User user) {
-        return new UserTokenDTO(user.getEmail(), user.getPassword(), user.getName());
+    public static UserTokenDTO from(User user, boolean isRefresh) {
+        return new UserTokenDTO(user.getEmail(), user.getPassword(), user.getName(), isRefresh);
     }
 }

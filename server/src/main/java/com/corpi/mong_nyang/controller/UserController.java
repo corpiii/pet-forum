@@ -47,12 +47,12 @@ public class UserController {
 
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String refreshToken) throws JsonProcessingException {
-        boolean isValidToken = jwtTokenUtil.isValidToken(refreshToken);
+        boolean isValidToken = jwtTokenUtil.isValidToken(refreshToken, true);
 
         if (!isValidToken) {
             return ResponseEntity
                     .status(HttpStatus.UNAUTHORIZED)
-                    .body("Refresh 토큰이 만료되었습니다.");
+                    .body("Refresh 토큰이 유효하지 않습니다.");
         }
 
         String userEmail = jwtTokenUtil.getUserEmail(refreshToken);
@@ -70,11 +70,11 @@ public class UserController {
             token = token.substring(7);
         }
 
-        boolean isValid = jwtTokenUtil.isValidToken(token);
+        boolean isValid = jwtTokenUtil.isValidToken(token, false);
 
         if (!isValid) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body("토큰이 만료되었습니다.");
+                    .body("Access 토큰이 유효하지 않습니다.");
         }
 
         String email = jwtTokenUtil.getUserEmail(token);
