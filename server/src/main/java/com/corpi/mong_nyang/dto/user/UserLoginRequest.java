@@ -1,8 +1,8 @@
 package com.corpi.mong_nyang.dto.user;
 
-import lombok.Getter;
+import lombok.Data;
 
-@Getter
+@Data
 public class UserLoginRequest {
     private String email;
     private String password;
