@@ -32,8 +32,8 @@ class HelpPostCommentServiceTest {
 
     @BeforeEach
     public void setup() {
-        String testerEmail1 = "a@b.com";
-        String testerEmail2 = "a@c.com";
+        String testerEmail1 = "a@bb.com";
+        String testerEmail2 = "a@cc.com";
 
         userService.join("test1", testerEmail1, "1111");
         userService.join("test2", testerEmail2, "1111");

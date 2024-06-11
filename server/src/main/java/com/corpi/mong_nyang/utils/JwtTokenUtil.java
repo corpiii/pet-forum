@@ -2,6 +2,7 @@ package com.corpi.mong_nyang.utils;
 
 import com.corpi.mong_nyang.domain.User;
 import com.corpi.mong_nyang.dto.user.UserTokenDTO;
+import com.corpi.mong_nyang.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.*;
@@ -11,6 +12,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
@@ -19,16 +21,14 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 @PropertySource("classpath:jwtkey.properties")
 public class JwtTokenUtil {
     private static final long ACCESS_EXPIRATION_TIME = Duration.ofMinutes(30).toMillis();
-    private static final long REFRESH_EXPIRATION_TIME = Duration.ofDays(7).toMillis();
-
+    private static final long REFRESH_EXPIRATION_TIME = Duration.ofDays(1).toMillis();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Value("${jwtkey}")
@@ -56,7 +56,8 @@ public class JwtTokenUtil {
     public String generateRefreshToken(User user) throws JsonProcessingException {
         long current = System.currentTimeMillis();
         SecretKey secretKey = Keys.hmacShaKeyFor(key.getBytes(StandardCharsets.UTF_8));
-        String json = objectMapper.writeValueAsString(user);
+        UserTokenDTO userTokenDTO = UserTokenDTO.from(user);
+        String json = objectMapper.writeValueAsString(userTokenDTO);
 
         return Jwts.builder()
                 .header()
@@ -83,5 +84,22 @@ public class JwtTokenUtil {
         String json = payload.get("user", String.class);
 
         return objectMapper.readValue(json, UserTokenDTO.class);
+    }
+
+    public boolean isValidToken(String token) throws JsonProcessingException {
+        UserTokenDTO userTokenDTO = decodeToken(token);
+        Date expiredAt = userTokenDTO.getExpiredAt();
+
+        if (expiredAt.before(new Date(System.currentTimeMillis()))) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public String getUserEmail(String refreshToken) throws JsonProcessingException {
+        UserTokenDTO userTokenDTO = decodeToken(refreshToken);
+
+        return userTokenDTO.getEmail();
     }
 }

@@ -58,6 +58,7 @@ class UserControllerTest {
         // then
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.accessToken").isNotEmpty())
+                .andExpect(jsonPath("$.refreshToken").isNotEmpty())
                 .andDo(MockMvcResultHandlers.print())
                 .andReturn();
     }
