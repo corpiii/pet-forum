@@ -97,8 +97,8 @@ public class JwtTokenUtil {
         return true;
     }
 
-    public String getUserEmail(String refreshToken) throws JsonProcessingException {
-        UserTokenDTO userTokenDTO = decodeToken(refreshToken);
+    public String getUserEmail(String token) throws JsonProcessingException {
+        UserTokenDTO userTokenDTO = decodeToken(token);
 
         return userTokenDTO.getEmail();
     }

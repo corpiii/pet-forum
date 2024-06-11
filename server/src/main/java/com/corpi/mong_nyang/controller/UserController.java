@@ -45,13 +45,8 @@ public class UserController {
         return ResponseEntity.ok(new TokenResponse(accessToken, refreshToken));
     }
 
-    static class RefreshTokenRequest {
-        String refreshToken;
-    }
-
     @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(@RequestBody RefreshTokenRequest tokenLoginRequest) throws JsonProcessingException {
-        String refreshToken = tokenLoginRequest.refreshToken;
+    public ResponseEntity<?> refreshToken(@RequestHeader("Authorization") String refreshToken) throws JsonProcessingException {
         boolean isValidToken = jwtTokenUtil.isValidToken(refreshToken);
 
         if (!isValidToken) {
@@ -69,13 +64,29 @@ public class UserController {
     }
 
     // 유저 삭제
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
-        try {
-            userService.delete(id);
-            return ResponseEntity.ok("User deleted successfully");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred while deleting the user");
+    @DeleteMapping("/delete")
+    public ResponseEntity<String> deleteUser(@RequestHeader("Authorization") String token) throws JsonProcessingException {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
         }
+
+        boolean isValid = jwtTokenUtil.isValidToken(token);
+
+        if (!isValid) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("토큰이 만료되었습니다.");
+        }
+
+        String email = jwtTokenUtil.getUserEmail(token);
+        User user = userService.findOne(email);
+
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body("유저가 존재하지 않습니다.");
+        }
+
+        userService.delete(user.getId());
+
+        return ResponseEntity.ok("");
     }
 }
