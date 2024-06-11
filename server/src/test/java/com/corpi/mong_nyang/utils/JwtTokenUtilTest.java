@@ -1,6 +1,9 @@
 package com.corpi.mong_nyang.utils;
 
 import com.corpi.mong_nyang.domain.User;
+import com.corpi.mong_nyang.dto.user.UserTokenDTO;
+import com.corpi.mong_nyang.service.UserService;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,23 +19,30 @@ import static org.junit.jupiter.api.Assertions.*;
 class JwtTokenUtilTest {
     @Autowired JwtTokenUtil jwtTokenUtil;
 
+    @Autowired UserService userService;
+
     @Test
     @DisplayName("유저 jwt 생성 후 decode 테스트")
-    void generateToken() {
+    void generateToken() throws JsonProcessingException {
         // given
         String name = "testName";
         String email = "testEmail";
         String password = "testPassword";
-        User user = User.of(name, email, password);
 
-        String jwt = jwtTokenUtil.generateToken(user);
+        userService.join(name, email, password);
+        User user = userService.findOne(email);
+
+        String jwt = jwtTokenUtil.generateAccessToken(user);
 
         log.info("jwt: " + jwt);
 
         // when
-        Map<String, String> decodeToken = jwtTokenUtil.decodeToken(jwt);
+        UserTokenDTO userTokenDTO = jwtTokenUtil.decodeToken(jwt);
 
         // then
-        assertEquals(email, decodeToken.get("email"));
+        assertEquals(user.getEmail(), userTokenDTO.getEmail());
+        assertEquals(user.getPassword(), userTokenDTO.getPassword());
+        assertEquals(user.getName(), userTokenDTO.getName());
+
     }
 }
