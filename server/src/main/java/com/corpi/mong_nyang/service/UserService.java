@@ -36,6 +36,16 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
+    public User login(String email, String password) {
+        User foundedUser = userRepository.findByEmail(email);
+
+        if (foundedUser.getPassword().equals(password)) {
+            return foundedUser;
+        }
+
+        return null;
+    }
+
     public void delete(Long id) {
         List<HelpPostComments> allCommentByUser = helpPostCommentRepository.findAllByUser(id);
         List<HelpPosts> allByUser = helpPostRepository.findAllByUser(id);
