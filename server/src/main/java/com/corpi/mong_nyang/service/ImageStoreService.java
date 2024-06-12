@@ -15,9 +15,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class ImageStoreService {
-
-    @Value("${file.upload-dir}")
-    private String uploadDir;
+    private String uploadDir = "/Users/ijeongmin/uploads";
 
     public String saveImage(MultipartFile file) throws IOException {
         String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();

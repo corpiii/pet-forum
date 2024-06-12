@@ -1,7 +1,6 @@
 package com.corpi.mong_nyang.dto.user;
 
 import com.corpi.mong_nyang.domain.User;
-import jakarta.annotation.Nullable;
 import lombok.*;
 
 import java.util.Date;
@@ -22,9 +21,10 @@ public class UserTokenDTO {
     @NonNull
     private boolean isRefresh;
 
+    @NonNull
     Date expiredAt;
 
-    public static UserTokenDTO from(User user, boolean isRefresh) {
-        return new UserTokenDTO(user.getEmail(), user.getPassword(), user.getName(), isRefresh);
+    public static UserTokenDTO from(User user, boolean isRefresh, Date expiredAt) {
+        return new UserTokenDTO(user.getEmail(), user.getPassword(), user.getName(), isRefresh, expiredAt);
     }
 }
