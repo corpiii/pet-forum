@@ -9,7 +9,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,6 +22,7 @@ import java.util.Optional;
 public class HelpPostService {
     private final int pageLimit = 50;
     private final HelpPostRepository helpPostRepository;
+    private final ImageStoreService imageStoreService;
 
     public Long createPost(String title, String content, User user, List<HelpPostImages> images) {
         HelpPosts post = HelpPosts.of(title, content, user, images);
@@ -32,8 +36,8 @@ public class HelpPostService {
         helpPostRepository.deleteById(id);
     }
 
-    public void updatePost(Long postId, String title, String content) {
-        Optional<HelpPosts> foundedPost = helpPostRepository.findById(postId);
+    public void updatePost(Long id, String title, String content, List<MultipartFile> images) throws IOException {
+        Optional<HelpPosts> foundedPost = helpPostRepository.findById(id);
 
         if (foundedPost.isEmpty()) {
             throw new IllegalArgumentException("게시글이 존재하지 않습니다.");
@@ -41,7 +45,22 @@ public class HelpPostService {
 
         HelpPosts post = foundedPost.get();
 
-        post.update(title, content);
+        // 기존 이미지 삭제.
+        for (HelpPostImages originImages : post.getImages()) {
+            imageStoreService.removeImage(originImages.getUrl());
+        }
+
+        List<HelpPostImages> updatedImages = new ArrayList<>();
+
+        // 업데이트 이미지 저장.
+        for (MultipartFile image : images) {
+            String url = imageStoreService.saveImage(image);
+            updatedImages.add(HelpPostImages.of(url));
+        }
+
+        post.update(title, content, updatedImages);
+    }
+
     }
 
     @Transactional(readOnly = true)

@@ -52,9 +52,10 @@ public class HelpPosts {
         return posts;
     }
 
-    public void update(String title, String content) {
+    public void update(String title, String content, List<HelpPostImages> images) {
         this.title = title;
         this.content = content;
+        this.images = images;
     }
 
     public void replyComment(HelpPostComments comments) {

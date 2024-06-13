@@ -78,4 +78,32 @@ public class HelpPostController {
 
         return ResponseEntity.ok().body(HelpPostResponse.from(post));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateOne(@RequestHeader("Authoriation") String token, @PathVariable long id, @ModelAttribute HelpPostRequest request) throws IOException {
+        boolean isValid = jwtTokenUtil.isValidToken(token, false);
+
+        if (!isValid) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Access 토큰이 유효하지 않습니다.");
+        }
+
+        Optional<HelpPosts> foundedPost = helpPostService.findById(id);
+
+        if (foundedPost.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("포스트가 존재하지 않습니다.");
+        }
+
+        HelpPosts post = foundedPost.get();
+        String email = jwtTokenUtil.getUserEmail(token);
+        User accessUser = userService.findOne(email);
+        User author = post.getAuthor();
+
+        if (!accessUser.equals(author)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("권한이 없습니다.");
+        }
+
+        helpPostService.updatePost(post.getId(), request.getTitle(), request.getContent(), request.getImages());
+
+        return ResponseEntity.ok("성공적으로 업데이트 되었습니다.");
+    }
 }
