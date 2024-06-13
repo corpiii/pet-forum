@@ -107,6 +107,10 @@ public class JwtTokenUtil {
     }
 
     public String getUserEmail(String token) throws JsonProcessingException {
+        if (token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+
         UserTokenDTO userTokenDTO = decodeToken(token);
 
         return userTokenDTO.getEmail();
