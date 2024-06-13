@@ -61,6 +61,15 @@ public class HelpPostService {
         post.update(title, content, updatedImages);
     }
 
+    public void removePost(Long id) throws IOException {
+        // 이미지 삭제
+        HelpPosts foundedPost = helpPostRepository.findById(id).get();
+
+        for (HelpPostImages image : foundedPost.getImages()) {
+            imageStoreService.removeImage(image.getUrl());
+        }
+
+        helpPostRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
