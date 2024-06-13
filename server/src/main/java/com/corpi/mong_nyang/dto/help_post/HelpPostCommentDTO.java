@@ -1,12 +1,16 @@
 package com.corpi.mong_nyang.dto.help_post;
 
 import com.corpi.mong_nyang.domain.help.HelpPostComments;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Data
 @RequiredArgsConstructor
 public class HelpPostCommentDTO {
     private final String authorName;

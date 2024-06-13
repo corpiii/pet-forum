@@ -3,12 +3,15 @@ package com.corpi.mong_nyang.dto.help_post;
 import com.corpi.mong_nyang.domain.help.HelpPostComments;
 import com.corpi.mong_nyang.domain.help.HelpPostImages;
 import com.corpi.mong_nyang.domain.help.HelpPosts;
+import lombok.Data;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Data
 @RequiredArgsConstructor
 public class HelpPostResponse {
     private final String title;
