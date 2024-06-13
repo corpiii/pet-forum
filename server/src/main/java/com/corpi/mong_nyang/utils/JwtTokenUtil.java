@@ -87,10 +87,11 @@ public class JwtTokenUtil {
     }
 
     public boolean isValidToken(String token, boolean isRefresh) throws JsonProcessingException {
-        if (token.startsWith("Bearer ")) {
-            token = token.substring(7);
+        if (!token.startsWith("Bearer ")) {
+            return false;
         }
 
+        token = token.substring(7);
         UserTokenDTO userTokenDTO = decodeToken(token);
 
         if (userTokenDTO.isRefresh() != isRefresh) {

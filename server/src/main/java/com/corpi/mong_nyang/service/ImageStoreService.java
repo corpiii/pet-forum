@@ -24,4 +24,12 @@ public class ImageStoreService {
 
         return filePath.toUri().getPath();
     }
+
+    public void removeImage(String path) throws IOException {
+        Files.delete(Path.of(path));
+    }
+
+    public boolean isExist(String path) {
+        return Files.exists(Path.of(path));
+    }
 }
