@@ -21,7 +21,7 @@ public class UserServiceTest {
     public void join() {
         // given
         String name = "abc";
-        String email = "a@b.com";
+        String email = "userJoin@b.com";
         String password = "1111";
 
         // when, then
@@ -35,13 +35,13 @@ public class UserServiceTest {
     public void join_fail() {
         // given
         String name = "abc";
-        String email = "a@b.com";
+        String email = "duplicate@a.com";
         String password = "1111";
 
         userService.join(name, email, password);
 
         String name1 = "aaa";
-        String email1 = "a@b.com";
+        String email1 = "duplicate@a.com";
         String password1 = "2222";
 
         // when, then
