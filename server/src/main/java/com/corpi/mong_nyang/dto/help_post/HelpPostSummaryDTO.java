@@ -6,5 +6,6 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class HelpPostSummaryDTO {
+    private Long id;
     private String title;
 }

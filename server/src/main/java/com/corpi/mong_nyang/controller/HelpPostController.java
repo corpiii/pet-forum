@@ -65,4 +65,17 @@ public class HelpPostController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body("포스트가 성공적으로 생성되었습니다.");
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> fetchOne(@PathVariable long id) {
+        Optional<HelpPosts> foundedPost = helpPostService.findById(id);
+
+        if (foundedPost.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("포스트가 존재하지 않습니다.");
+        }
+
+        HelpPosts post = foundedPost.get();
+
+        return ResponseEntity.ok().body(HelpPostResponse.from(post));
+    }
 }
