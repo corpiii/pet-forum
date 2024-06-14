@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Commit;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -79,7 +80,7 @@ class HelpPostServiceTest {
 
     @Test
     @DisplayName("post 업데이트 후 업데이트가 잘 되었는지 확인")
-    public void updatePost() {
+    public void updatePost() throws IOException {
         // given
         String testTitle = "testTitle";
         String testContent = "testContent";
@@ -89,7 +90,7 @@ class HelpPostServiceTest {
         Long postId = helpPostService.createPost(testTitle, testContent, testUser, new ArrayList<>());
 
         // when
-        helpPostService.updatePost(postId, newTitle, newContent);
+        helpPostService.updatePost(postId, newTitle, newContent, new ArrayList<>());
 
         // then
         Optional<HelpPosts> updatedPostOpt = helpPostService.findById(postId);

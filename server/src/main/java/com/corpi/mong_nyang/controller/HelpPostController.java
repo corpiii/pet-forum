@@ -80,7 +80,7 @@ public class HelpPostController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateOne(@RequestHeader("Authoriation") String token, @PathVariable long id, @ModelAttribute HelpPostRequest request) throws IOException {
+    public ResponseEntity<?> updateOne(@RequestHeader("Authorization") String token, @PathVariable long id, @ModelAttribute HelpPostRequest request) throws IOException {
         boolean isValid = jwtTokenUtil.isValidToken(token, false);
 
         if (!isValid) {
