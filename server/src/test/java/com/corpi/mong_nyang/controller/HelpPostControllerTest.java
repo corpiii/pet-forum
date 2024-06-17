@@ -200,7 +200,30 @@ public class HelpPostControllerTest {
                             return request;
                         })
                 )
-        /* then */
+                /* then */
                 .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    @DisplayName("포스트 삭제 테스트")
+    public void deleteHelpPost() throws Exception {
+        /* given */
+        String testTitle = "testTitle";
+        String testContent = "testContent";
+        String accessToken = jwtTokenUtil.generateAccessToken(postWriter);
+
+        // 포스트 작성
+        Long postId = helpPostService.createPost(testTitle, testContent, postWriter, new ArrayList<>());
+        HelpPosts post = helpPostService.findById(postId).get();
+
+        /* when */
+        mockMvc.perform(delete("/api/help-post/{postId}", postId.toString())
+                        .header("Authorization", accessToken)
+                )
+        /* then */
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Assertions.assertTrue(helpPostService.findById(postId).isEmpty());
     }
 }
