@@ -6,17 +6,29 @@ import com.corpi.mong_nyang.domain.help.HelpPosts;
 import com.corpi.mong_nyang.dto.help_post.HelpPostCommentDTO;
 import com.corpi.mong_nyang.service.HelpPostService;
 import com.corpi.mong_nyang.service.UserService;
+import com.corpi.mong_nyang.utils.JwtTokenUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
+@Slf4j
 public class HelpPostControllerTest {
     @Autowired
     private MockMvc mockMvc;
@@ -38,6 +51,9 @@ public class HelpPostControllerTest {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private JwtTokenUtil jwtTokenUtil;
 
     User postWriter;
 
@@ -90,6 +106,61 @@ public class HelpPostControllerTest {
 //                .andExpect(jsonPath("$.comments").value(commentDTO))
                 .andReturn();
 
+        String request = mvcResult.getRequest().getContentAsString();
+
         System.out.println("data = " + mvcResult.getResponse().getContentAsString(Charset.defaultCharset()));
     }
+
+    @Test
+    @DisplayName("포스트에 이미지 추가 업데이트 테스트")
+    public void updateHelpPost() throws Exception {
+        /* given */
+        String testTitle = "testTitle";
+        String testContent = "testContent";
+        String commentTestUserEmail = "comment@writer.com";
+        String accessToken = jwtTokenUtil.generateAccessToken(postWriter);
+
+        // 유저 생성
+        Long userId = userService.join("댓글 작성자", commentTestUserEmail, "1111");
+        User commentWriter = userService.findOne(commentTestUserEmail);
+
+        // 포스트 작성
+        Long postId = helpPostService.createPost(testTitle, testContent, postWriter, new ArrayList<>());
+        HelpPosts post = helpPostService.findById(postId).get();
+
+        // 댓글 작성
+        HelpPostComments comment = HelpPostComments.of("댓글", commentWriter);
+
+        post.replyComment(comment);
+        comment.replyComment("대댓글", commentWriter);
+
+        /* when */
+
+        // 이미지 파일 하나
+        Path imagePath = Paths.get("/Users/ijeongmin/uploads/test/testImage.png");
+        byte[] imageBytes = Files.readAllBytes(imagePath);
+        MockMultipartFile imageFile = new MockMultipartFile("images", "testImage.png", MediaType.IMAGE_PNG_VALUE, imageBytes);
+
+        // 다른 폼 데이터 준비
+        String title = "Sample Title";
+        String content = "Sample Content";
+
+        MvcResult mvcResult = mockMvc.perform(multipart("/api/help-post/{postId}", postId.toString())
+                        .file(imageFile)
+                        .header("Authorization", "Bearer " + accessToken)
+                        .param("title", title)
+                        .param("content", content)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .with(request -> {
+                            request.setMethod("PUT");
+                            return request;
+                        })
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        HelpPosts post2 = helpPostService.findById(postId).get();
+        Assertions.assertEquals(1, post2.getImages().size());
+    }
+
 }
