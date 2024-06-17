@@ -8,6 +8,7 @@ import com.corpi.mong_nyang.service.HelpPostService;
 import com.corpi.mong_nyang.service.ImageStoreService;
 import com.corpi.mong_nyang.service.UserService;
 import com.corpi.mong_nyang.utils.JwtTokenUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.http.HttpStatus;
@@ -105,5 +106,25 @@ public class HelpPostController {
         helpPostService.updatePost(post.getId(), request.getTitle(), request.getContent(), request.getImages());
 
         return ResponseEntity.ok("성공적으로 업데이트 되었습니다.");
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteOne(@RequestHeader("Authorization") String token, @PathVariable long id) throws JsonProcessingException {
+        if (jwtTokenUtil.isValidToken(token, false)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Access 토큰이 유효하지 않습니다.");
+        }
+
+        String userEmail = jwtTokenUtil.getUserEmail(token);
+        User user = userService.findOne(userEmail);
+
+        HelpPosts foundedPost = helpPostService.findById(id).get();
+
+        if (!foundedPost.getAuthor().getEmail().equals(user.getEmail())) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("권한이 없습니다.");
+        }
+
+        helpPostService.deletePost(id);
+
+        return ResponseEntity.status(HttpStatus.OK).body("성공적으로 삭제했습니다.");
     }
 }
