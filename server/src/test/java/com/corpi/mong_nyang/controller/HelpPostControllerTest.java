@@ -163,4 +163,44 @@ public class HelpPostControllerTest {
         Assertions.assertEquals(1, post2.getImages().size());
     }
 
+    @Test
+    @DisplayName("글을 작성한 유저가 아닐 경우 업데이트 실패")
+    public void updateFail() throws Exception {
+        /* given */
+        String testTitle = "testTitle";
+        String testContent = "testContent";
+        String anotherTestUserEmail = "comment@writer.com";
+
+        // 유저 생성
+        Long userId = userService.join("댓글 작성자", anotherTestUserEmail, "1111");
+        User anotherUser = userService.findOne(anotherTestUserEmail);
+
+        // 글을 쓴 유저가 아닌 토큰
+        String accessToken = jwtTokenUtil.generateAccessToken(anotherUser);
+
+        // 포스트 작성
+        Long postId = helpPostService.createPost(testTitle, testContent, postWriter, new ArrayList<>());
+        HelpPosts post = helpPostService.findById(postId).get();
+
+        /* when */
+        Path imagePath = Paths.get("/Users/ijeongmin/uploads/test/testImage.png");
+        byte[] imageBytes = Files.readAllBytes(imagePath);
+        MockMultipartFile imageFile = new MockMultipartFile("images", "testImage.png", MediaType.IMAGE_PNG_VALUE, imageBytes);
+        String title = "Sample Title";
+        String content = "Sample Content";
+
+        mockMvc.perform(multipart("/api/help-post/{postId}", postId.toString())
+                        .file(imageFile)
+                        .header("Authorization", "Bearer " + accessToken)
+                        .param("title", title)
+                        .param("content", content)
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .with(request -> {
+                            request.setMethod("PUT");
+                            return request;
+                        })
+                )
+        /* then */
+                .andExpect(status().isUnauthorized());
+    }
 }
