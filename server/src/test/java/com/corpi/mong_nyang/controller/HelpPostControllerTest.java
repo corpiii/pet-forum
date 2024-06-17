@@ -195,7 +195,7 @@ public class HelpPostControllerTest {
                         .param("title", title)
                         .param("content", content)
                         .contentType(MediaType.MULTIPART_FORM_DATA)
-                        .with(request -> {
+                        .with(request -> { // multipart 이기 때문에 메서드를 지정해주어야 함.
                             request.setMethod("PUT");
                             return request;
                         })
@@ -217,13 +217,43 @@ public class HelpPostControllerTest {
         HelpPosts post = helpPostService.findById(postId).get();
 
         /* when */
-        mockMvc.perform(delete("/api/help-post/{postId}", postId.toString())
-                        .header("Authorization", accessToken)
+        MvcResult mvcResult = mockMvc.perform(delete("/api/help-post/{postId}", postId.toString())
+                        .header("Authorization", "Bearer " + accessToken)
                 )
         /* then */
                 .andExpect(status().isOk())
                 .andReturn();
 
         Assertions.assertTrue(helpPostService.findById(postId).isEmpty());
+    }
+
+    @Test
+    @DisplayName("권한이 없을 경우 포스트 삭제 실패 테스트")
+    public void deleteFailHelpPost() throws Exception {
+        /* given */
+        String testTitle = "testTitle";
+        String testContent = "testContent";
+        String anotherTestUserEmail = "comment@writer.com";
+
+        // 유저 생성
+        Long userId = userService.join("다른 유저", anotherTestUserEmail, "1111");
+        User anotherUser = userService.findOne(anotherTestUserEmail);
+
+        // 글을 쓴 유저가 아닌 토큰
+        String accessToken = jwtTokenUtil.generateAccessToken(anotherUser);
+
+        // 포스트 작성
+        Long postId = helpPostService.createPost(testTitle, testContent, postWriter, new ArrayList<>());
+        HelpPosts post = helpPostService.findById(postId).get();
+
+        /* when */
+        mockMvc.perform(delete("/api/help-post/{postId}", postId.toString())
+                        .header("Authorization", "Bearer " + accessToken)
+                )
+                /* then */
+                .andExpect(status().isUnauthorized())
+                .andReturn();
+
+        Assertions.assertTrue(helpPostService.findById(postId).isPresent());
     }
 }

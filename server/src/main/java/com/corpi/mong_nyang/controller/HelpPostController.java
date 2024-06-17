@@ -110,7 +110,7 @@ public class HelpPostController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteOne(@RequestHeader("Authorization") String token, @PathVariable long id) throws JsonProcessingException {
-        if (jwtTokenUtil.isValidToken(token, false)) {
+        if (!jwtTokenUtil.isValidToken(token, false)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Access 토큰이 유효하지 않습니다.");
         }
 
