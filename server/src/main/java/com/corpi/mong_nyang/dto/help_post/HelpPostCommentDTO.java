@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 @Data
 @RequiredArgsConstructor
 public class HelpPostCommentDTO {
+    private final long id;
     private final String authorName;
     private final String content;
     private final LocalDateTime createdAt;
@@ -26,6 +27,6 @@ public class HelpPostCommentDTO {
             childrenDTO = childrenOrigin.stream().map(HelpPostCommentDTO::from).collect(Collectors.toList());
         }
 
-        return new HelpPostCommentDTO(comment.getAuthor().getName(),  comment.getContent(), comment.getCreatedAt(), childrenDTO);
+        return new HelpPostCommentDTO(comment.getId(), comment.getAuthor().getName(),  comment.getContent(), comment.getCreatedAt(), childrenDTO);
     }
 }
