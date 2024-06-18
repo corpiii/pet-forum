@@ -9,7 +9,6 @@ import com.corpi.mong_nyang.service.UserService;
 import com.corpi.mong_nyang.utils.JwtTokenUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,18 +16,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/comment")
+@RequestMapping("api/help-post-comment")
 @RequiredArgsConstructor
-public class CommentController {
+public class HelpPostCommentController {
 
-    @Autowired
-    JwtTokenUtil jwtTokenUtil;
-
-    @Autowired
-    HelpPostService helpPostService;
-
-    @Autowired
-    UserService userService;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final HelpPostService helpPostService;
+    private final UserService userService;
 
     @PostMapping("/reply/{postId}")
     public ResponseEntity<?> reply(@PathVariable("postId") long id, @RequestHeader("Authorization") String token, @RequestBody HelpPostCommentRequest request) throws JsonProcessingException {
