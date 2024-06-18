@@ -45,8 +45,7 @@ public class HelpPostComments {
         return new HelpPostComments(content, LocalDateTime.now(), author);
     }
 
-    public void replyComment(String content, User author) {
-        HelpPostComments comment = HelpPostComments.of(content, author);
+    public void replyComment(HelpPostComments comment) {
         this.children.add(comment);
         comment.parent = this;
     }
