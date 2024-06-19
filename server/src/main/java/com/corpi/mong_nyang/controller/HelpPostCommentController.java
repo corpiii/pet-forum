@@ -100,4 +100,28 @@ public class HelpPostCommentController {
 
         return ResponseEntity.ok("성공적으로 댓글이 수정되었습니다.");
     }
+
+    @DeleteMapping("/reply/{commentId}")
+    public ResponseEntity<?> deleteComment(@PathVariable("commentId") long id, @RequestHeader("Authorization") String token) throws JsonProcessingException {
+        if (!jwtTokenUtil.isValidToken(token, false)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Access 토큰이 유효하지 않습니다.");
+        }
+
+        HelpPostComments foundedComment = helpPostCommentService.findById(id);
+
+        if (foundedComment == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("comment가 존재하지 않습니다.");
+        }
+
+        String email = jwtTokenUtil.getUserEmail(token);
+        User author = userService.findOne(email);
+
+        if (foundedComment.getAuthor().equals(author)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("권한이 없습니다.");
+        }
+
+        foundedComment.clearComment();
+
+        return ResponseEntity.ok("성공적으로 댓글이 삭제되었습니다.");
+    }
 }
