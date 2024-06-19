@@ -1,10 +1,14 @@
 package com.corpi.mong_nyang.controller;
 
 import com.corpi.mong_nyang.domain.User;
+import com.corpi.mong_nyang.domain.help.HelpPostComments;
 import com.corpi.mong_nyang.domain.help.HelpPosts;
+import com.corpi.mong_nyang.repository.HelpPostCommentRepository;
+import com.corpi.mong_nyang.service.HelpPostCommentService;
 import com.corpi.mong_nyang.service.HelpPostService;
 import com.corpi.mong_nyang.service.UserService;
 import com.corpi.mong_nyang.utils.JwtTokenUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,6 +23,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -39,6 +44,9 @@ class HelpPostCommentControllerTest {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    HelpPostCommentService helpPostCommentService;
 
     User postWriter;
 
@@ -75,6 +83,40 @@ class HelpPostCommentControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Assertions.assertEquals(1, post.getComments().size());
+        HelpPosts foundedPost = helpPostService.findById(postId).get();
+        Assertions.assertEquals(1, foundedPost.getComments().size());
+    }
+
+    @Test
+    @DisplayName("대댓글 기능 정상 실행 테스트")
+    public void reReplyCommentTest() throws Exception {
+        /* given */
+        String testTitle = "testTitle";
+        String testContent = "testContent";
+        String accessToken = jwtTokenUtil.generateAccessToken(postWriter);
+
+        // 포스트 작성
+        Long postId = helpPostService.createPost(testTitle, testContent, postWriter, new ArrayList<>());
+        HelpPosts post = helpPostService.findById(postId).get();
+        HelpPostComments helpPostComments = HelpPostComments.of("새로운 댓글", postWriter);
+
+        Long commentId = helpPostCommentService.createCommentByUserInPost(postId, helpPostComments);
+
+        log.info("commentId: " + commentId);
+
+        /* when */
+        MvcResult mvcResult = mockMvc.perform(post("/api/help-post-comment/re-reply/{commentId}", commentId.toString())
+                        .header("Authorization", "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"content\":\"새로운 대댓글\"}")
+                )
+                /* then */
+                .andExpect(status().isOk())
+                .andReturn();
+
+        HelpPosts foundedPost = helpPostService.findById(postId).get();
+
+        Assertions.assertEquals(1, foundedPost.getComments().size());
+        Assertions.assertEquals(1, foundedPost.getComments().get(0).getChildren().size());
     }
 }
