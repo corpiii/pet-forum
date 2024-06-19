@@ -61,7 +61,8 @@ class HelpPostCommentServiceTest {
         HelpPosts createdPost = helpPosts.get(0);
 
         // when
-        helpPostCommentService.createCommentByUserInPost(createdPost.getId(), commentWriter.getId(), commentContent);
+        HelpPostComments comment = HelpPostComments.of(commentContent, commentWriter);
+        helpPostCommentService.createCommentByUserInPost(createdPost.getId(), comment);
 
         // then
         HelpPosts commentedPost = helpPostService.findById(helpPosts.get(0).getId()).get();
@@ -86,7 +87,8 @@ class HelpPostCommentServiceTest {
         assertEquals(createdPost.getTitle(), postTitle);
         assertEquals(createdPost.getContent(), postContent);
 
-        Long createdCommentId = helpPostCommentService.createCommentByUserInPost(createdPost.getId(), commentWriter.getId(), commentContent);
+        HelpPostComments comment = HelpPostComments.of(commentContent, commentWriter);
+        Long createdCommentId = helpPostCommentService.createCommentByUserInPost(createdPost.getId(), comment);
 
         assertEquals(createdPost.getComments().get(0).getContent(), commentContent);
 
@@ -111,7 +113,8 @@ class HelpPostCommentServiceTest {
         assertEquals(createdPost.getTitle(), postTitle);
         assertEquals(createdPost.getContent(), postContent);
 
-        Long createdCommentId = helpPostCommentService.createCommentByUserInPost(createdPost.getId(), commentWriter.getId(), commentContent);
+        HelpPostComments comment = HelpPostComments.of(commentContent, commentWriter);
+        Long createdCommentId = helpPostCommentService.createCommentByUserInPost(createdPost.getId(), comment);
 
         assertEquals(createdPost.getComments().get(0).getContent(), commentContent);
 
@@ -140,14 +143,16 @@ class HelpPostCommentServiceTest {
         assertEquals(createdPost.getTitle(), postTitle);
         assertEquals(createdPost.getContent(), postContent);
 
-        Long createdCommentId = helpPostCommentService.createCommentByUserInPost(createdPost.getId(), commentWriter.getId(), commentContent);
+        HelpPostComments comment = HelpPostComments.of(commentContent, commentWriter);
+        Long createdCommentId = helpPostCommentService.createCommentByUserInPost(createdPost.getId(), comment);
 
         assertEquals(createdPost.getComments().get(0).getContent(), commentContent);
 
         // when
         HelpPostComments willRepliedComment = helpPostCommentService.findById(createdCommentId);
+        HelpPostComments reComment = HelpPostComments.of(replyCommentContent, commentWriter);
 
-        willRepliedComment.replyComment(replyCommentContent, postWriter);
+        willRepliedComment.replyComment(reComment);
 
         // then
         HelpPosts helpPosts = helpPostService.fetchPostList(0).get(0);
@@ -171,13 +176,15 @@ class HelpPostCommentServiceTest {
         assertEquals(createdPost.getTitle(), postTitle);
         assertEquals(createdPost.getContent(), postContent);
 
-        Long createdCommentId = helpPostCommentService.createCommentByUserInPost(createdPost.getId(), commentWriter.getId(), commentContent);
+        HelpPostComments comment = HelpPostComments.of(commentContent, commentWriter);
+        Long createdCommentId = helpPostCommentService.createCommentByUserInPost(createdPost.getId(), comment);
 
         assertEquals(createdPost.getComments().get(0).getContent(), commentContent);
 
         HelpPostComments willRepliedComment = helpPostCommentService.findById(createdCommentId);
+        HelpPostComments reComment = HelpPostComments.of(replyCommentContent, commentWriter);
 
-        willRepliedComment.replyComment(replyCommentContent, postWriter);
+        willRepliedComment.replyComment(reComment);
 
         // when
         helpPostService.deletePost(postId);

@@ -4,6 +4,7 @@ import com.corpi.mong_nyang.domain.User;
 import com.corpi.mong_nyang.domain.help.HelpPostComments;
 import com.corpi.mong_nyang.domain.help.HelpPosts;
 import com.corpi.mong_nyang.dto.help_post.HelpPostCommentDTO;
+import com.corpi.mong_nyang.service.HelpPostCommentService;
 import com.corpi.mong_nyang.service.HelpPostService;
 import com.corpi.mong_nyang.service.UserService;
 import com.corpi.mong_nyang.utils.JwtTokenUtil;
@@ -50,6 +51,9 @@ public class HelpPostControllerTest {
     private HelpPostService helpPostService;
 
     @Autowired
+    private HelpPostCommentService helpPostCommentService;
+
+    @Autowired
     private UserService userService;
 
     @Autowired
@@ -93,10 +97,11 @@ public class HelpPostControllerTest {
         Long userId = userService.join("댓글 작성자", commentTestUserEmail, "1111");
         User commentWriter = userService.findOne(commentTestUserEmail);
         HelpPostComments comment = HelpPostComments.of("댓글", commentWriter);
+        HelpPostComments reComment = HelpPostComments.of("댓글", commentWriter);
 
         /* when */
-        post.replyComment(comment);
-        comment.replyComment("대댓글", commentWriter);
+        helpPostCommentService.createCommentByUserInPost(postId, comment);
+        helpPostCommentService.createReCommentInComment(comment.getId(), reComment);
 
         /* then */
         HelpPostCommentDTO commentDTO = HelpPostCommentDTO.from(comment);
@@ -130,9 +135,10 @@ public class HelpPostControllerTest {
 
         // 댓글 작성
         HelpPostComments comment = HelpPostComments.of("댓글", commentWriter);
+        HelpPostComments reComment = HelpPostComments.of("댓글", commentWriter);
 
         post.replyComment(comment);
-        comment.replyComment("대댓글", commentWriter);
+        comment.replyComment(reComment);
 
         /* when */
 
