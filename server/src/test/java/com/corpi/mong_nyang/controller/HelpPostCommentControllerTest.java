@@ -25,8 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -127,7 +126,7 @@ class HelpPostCommentControllerTest {
         /* given */
         String testTitle = "testTitle";
         String testContent = "testContent";
-        String updateContent = "updateContent";
+        String updateContent = "수정된 댓글";
         String accessToken = jwtTokenUtil.generateAccessToken(postWriter);
 
         // 포스트 작성
@@ -150,5 +149,34 @@ class HelpPostCommentControllerTest {
 
         Assertions.assertEquals(1, foundedPost.getComments().size());
         Assertions.assertEquals(updateContent, foundedPost.getComments().get(0).getContent());
+    }
+
+    @Test
+    @DisplayName("댓글 삭제 기능 테스트")
+    public void replyDeleteTest() throws Exception {
+        /* given */
+        String testTitle = "testTitle";
+        String testContent = "testContent";
+        String accessToken = jwtTokenUtil.generateAccessToken(postWriter);
+
+        // 포스트 작성
+        Long postId = helpPostService.createPost(testTitle, testContent, postWriter, new ArrayList<>());
+        HelpPostComments helpPostComments = HelpPostComments.of("새로운 댓글", postWriter);
+
+        Long commentId = helpPostCommentService.createCommentByUserInPost(postId, helpPostComments);
+
+        /* when */
+        MvcResult mvcResult = mockMvc.perform(delete("/api/help-post-comment/reply/{commentId}", commentId.toString())
+                        .header("Authorization", "Bearer " + accessToken)
+                )
+                /* then */
+                .andExpect(status().isOk())
+                .andReturn();
+
+        HelpPosts foundedPost = helpPostService.findById(postId).get();
+
+        Assertions.assertEquals(1, foundedPost.getComments().size());
+        Assertions.assertNull(foundedPost.getComments().get(0).getAuthor());
+        Assertions.assertNull(foundedPost.getComments().get(0).getContent());
     }
 }

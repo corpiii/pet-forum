@@ -116,7 +116,7 @@ public class HelpPostCommentController {
         String email = jwtTokenUtil.getUserEmail(token);
         User author = userService.findOne(email);
 
-        if (foundedComment.getAuthor().equals(author)) {
+        if (!foundedComment.getAuthor().equals(author)) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("권한이 없습니다.");
         }
 
