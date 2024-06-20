@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -118,5 +119,36 @@ class HelpPostCommentControllerTest {
 
         Assertions.assertEquals(1, foundedPost.getComments().size());
         Assertions.assertEquals(1, foundedPost.getComments().get(0).getChildren().size());
+    }
+
+    @Test
+    @DisplayName("댓글 업데이트 기능 테스트")
+    public void replyUpdateTest() throws Exception {
+        /* given */
+        String testTitle = "testTitle";
+        String testContent = "testContent";
+        String updateContent = "updateContent";
+        String accessToken = jwtTokenUtil.generateAccessToken(postWriter);
+
+        // 포스트 작성
+        Long postId = helpPostService.createPost(testTitle, testContent, postWriter, new ArrayList<>());
+        HelpPostComments helpPostComments = HelpPostComments.of("새로운 댓글", postWriter);
+
+        Long commentId = helpPostCommentService.createCommentByUserInPost(postId, helpPostComments);
+
+        /* when */
+        MvcResult mvcResult = mockMvc.perform(put("/api/help-post-comment/reply/{commentId}", commentId.toString())
+                        .header("Authorization", "Bearer " + accessToken)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"content\":\""+ updateContent +"\"}")
+                )
+                /* then */
+                .andExpect(status().isOk())
+                .andReturn();
+
+        HelpPosts foundedPost = helpPostService.findById(postId).get();
+
+        Assertions.assertEquals(1, foundedPost.getComments().size());
+        Assertions.assertEquals(updateContent, foundedPost.getComments().get(0).getContent());
     }
 }
